@@ -134,6 +134,7 @@
   var lean = { x: 0, y: 0 }, leanTarget = { x: 0, y: 0 };
   var running = false, onScreen = true, rafId = 0, lastTs = 0, lastDraw = 0;
   var FRAME = 1000 / 24;
+  var CALM_SPEED = 0.35;    // field-time multiplier under prefers-reduced-motion
   var contourGen = d3.contours().smooth(true);
   var projection = d3.geoIdentity();
   var path = d3.geoPath(projection, ctx);
@@ -345,14 +346,15 @@
     if (ts - lastDraw < FRAME) return;
     var dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
     lastTs = ts; lastDraw = ts;
-    t += dt;
+    // Reduced motion keeps the field alive but drifting at a fraction of the pace.
+    t += dt * (reducedMotion() ? CALM_SPEED : 1);
     // Ease the hot spot toward the pointer.
     lean.x += (leanTarget.x - lean.x) * 0.06;
     lean.y += (leanTarget.y - lean.y) * 0.06;
     draw();
   }
 
-  function shouldRun() { return onScreen && !doc.hidden && !reducedMotion(); }
+  function shouldRun() { return onScreen && !doc.hidden; }
 
   function update() {
     var want = shouldRun();
@@ -408,7 +410,10 @@
   }
   doc.addEventListener("visibilitychange", update);
   if (mqReduce) {
-    var onReduce = function () { update(); redrawStatic(); };
+    var onReduce = function () {
+      if (reducedMotion()) { leanTarget.x = 0; leanTarget.y = 0; }
+      update();
+    };
     if (mqReduce.addEventListener) mqReduce.addEventListener("change", onReduce);
     else if (mqReduce.addListener) mqReduce.addListener(onReduce);
   }

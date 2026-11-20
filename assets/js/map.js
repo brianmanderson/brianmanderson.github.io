@@ -12,6 +12,7 @@
   var STEP_MS = 3600;          // dwell per chapter while playing
   var ARC_MS = 1400;           // one arc drawing in
   var ARC_CHAIN_MS = 620;      // per arc when several draw in sequence
+  var CALM_ARC_SCALE = 1.5;    // arcs draw this much slower under reduced motion
   var KIND_LABEL = { education: "Education", training: "Training", work: "Work" };
   var RING_RADII = [4.6, 7.8, 11.4, 15.4, 20, 25.2];
 
@@ -403,7 +404,7 @@
         s("path", { class: "jm-borders", d: path(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; })) }, gBase);
         s("path", { class: "jm-coast", d: nationD }, gBase);
         gBase.classList.add("is-loaded");
-        updateStates(state.active);
+        updateStates(pinIdx);
       }
       function baseFailed() {
         stage.appendChild(h("p", { class: "jm-note", text: "Basemap unavailable" }));
@@ -419,6 +420,7 @@
 
       /* layout: keep pins and labels a constant on-screen size as the SVG scales */
       var k = 1, compact = false;
+      var pinIdx = state.active;  // stop the pins currently highlight (lags state.active while an arc draws)
       function layout() {
         var rect = svg.getBoundingClientRect();
         if (!rect.width) return;
@@ -460,7 +462,7 @@
         var obstacles = locs.map(function (l) { return { x: l.x - 8 * k, y: l.y - 8 * k, w: 16 * k, h: 16 * k, own: l }; });
         if (state.talks) markers.forEach(function (m) { obstacles.push({ x: m.px - 6 * k, y: m.py - 6 * k, w: 12 * k, h: 12 * k }); });
         var placed = [];
-        var activeLoc = chapters[state.active].loc;
+        var activeLoc = chapters[pinIdx].loc;
         var order = locs.slice().sort(function (a, b) { return (b === activeLoc) - (a === activeLoc); });
         order.forEach(function (l) {
           var hasSub = !compact;
@@ -522,7 +524,7 @@
         if (leg.anim) { cancelAnimationFrame(leg.anim.raf); leg.anim = null; }
         leg.head.classList.remove("is-on");
       }
-      function tween(leg, to, dur, delay, withHead) {
+      function tween(leg, to, dur, delay, withHead, onDone) {
         cancel(leg);
         var from = leg.progress, token = {}, start = performance.now() + delay;
         leg.anim = token;
@@ -540,12 +542,14 @@
             leg.head.classList.toggle("is-on", t < 1);
           }
           if (t < 1) token.raf = requestAnimationFrame(frame);
-          else { leg.anim = null; leg.head.classList.remove("is-on"); }
+          else { leg.anim = null; leg.head.classList.remove("is-on"); if (onDone) onDone(); }
         }
         token.raf = requestAnimationFrame(frame);
       }
       function renderRoute(target, animate) {
-        var still = reduced() || !animate;
+        // Reduced motion still traces the route, but slower, with no travelling
+        // head, and routes leaving the map vanish instead of retracting.
+        var still = !animate, calm = reduced();
         var queue = [];
         legs.forEach(function (leg) {
           var show = leg.chapter.index <= target;
@@ -553,19 +557,32 @@
           if (show) {
             if (leg.shown) { cancel(leg); setProgress(leg, 1); } else queue.push(leg);
           } else if (leg.shown || leg.progress > 0) {
-            if (still) { cancel(leg); setProgress(leg, 0); } else tween(leg, 0, 380, 0, false);
+            if (still || calm) { cancel(leg); setProgress(leg, 0); } else tween(leg, 0, 380, 0, false);
           }
           leg.shown = show;
         });
-        if (still) { queue.forEach(function (leg) { cancel(leg); setProgress(leg, 1); }); return; }
-        var dur = queue.length > 1 ? ARC_CHAIN_MS : ARC_MS, delay = queue.length > 1 ? 120 : 60;
+        // Nothing to draw toward (or no animation): the destination lights at once.
+        if (still || !queue.length) {
+          queue.forEach(function (leg) { cancel(leg); setProgress(leg, 1); });
+          showPins(target);
+          return;
+        }
+        // Otherwise each stop lights only once the arc reaching it has landed.
+        var dur = (queue.length > 1 ? ARC_CHAIN_MS : ARC_MS) * (calm ? CALM_ARC_SCALE : 1);
+        var delay = queue.length > 1 ? 120 : 60;
         queue.forEach(function (leg) {
-          tween(leg, 1, dur, delay, true);
+          tween(leg, 1, dur, delay, !calm, function () { showPins(leg.chapter.index); });
           delay += dur * 0.82;
         });
       }
 
       function update(i, animate) {
+        renderRoute(i, animate);
+      }
+
+      // Pin, label and state highlighting for the stop the route has reached.
+      function showPins(i) {
+        pinIdx = i;
         var activeLoc = chapters[i].loc;
         var seen = {};
         chapters.forEach(function (c) { if (c.index <= i) seen[c.loc.i] = true; });
@@ -578,7 +595,6 @@
           });
         });
         gPins.appendChild(activeLoc.g); // draw active pin on top
-        renderRoute(i, animate);
         updateStates(i);
         placeLabels();
       }
@@ -592,9 +608,13 @@
 
       /* intro: draw the whole route in once the map is first seen */
       function intro() {
-        if (state.interacted || reduced()) return;
-        legs.forEach(function (leg) { cancel(leg); setProgress(leg, 0); leg.shown = false; });
+        if (state.interacted) return;
+        hideAllRoutes();
         renderRoute(state.active, true);
+      }
+      function hideAllRoutes() {
+        legs.forEach(function (leg) { cancel(leg); setProgress(leg, 0); leg.shown = false; });
+        showPins(0);
       }
 
       if (window.ResizeObserver) new ResizeObserver(function () { layout(); }).observe(stage);
@@ -603,7 +623,7 @@
 
       return {
         svg: svg, markers: markers, update: update, layout: layout, setTalks: setTalks, intro: intro,
-        hideAllRoutes: function () { legs.forEach(function (leg) { cancel(leg); setProgress(leg, 0); leg.shown = false; }); },
+        hideAllRoutes: hideAllRoutes,
       };
     }
 
@@ -794,7 +814,7 @@
     if (map) {
       map.layout();
       map.update(state.active, false);
-      if (window.IntersectionObserver && !reduced()) {
+      if (window.IntersectionObserver) {
         map.hideAllRoutes();
         var io = new IntersectionObserver(function (entries) {
           entries.forEach(function (en) {

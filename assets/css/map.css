@@ -548,4 +548,14 @@
 @media (prefers-reduced-motion: reduce) {
   .jm-pulse { display: none; }
   .jm-now-dot { animation: none; }
+  /* tokens.css zeroes every transition under reduced motion, which makes a stop
+     snap on when its arc lands. Restore cross-fades on the map (colour and
+     opacity only); the pin rings no longer scale, so nothing moves. */
+  .jm-svg .jm-iso { transform: none; }
+  .jm-svg .jm-iso,
+  .jm-svg .jm-core,
+  .jm-svg .jm-state,
+  .jm-svg .jm-label,
+  .jm-svg .jm-arc,
+  .jm-svg .jm-arc-glow { transition-duration: 0.6s !important; }
 }
