@@ -1,5 +1,7 @@
 # Brian Anderson
 
+**Live site: https://brianmanderson.github.io/**
+
 Personal website of Brian Anderson. A static site (plain HTML, CSS and JavaScript, no build step).
 
 ## Preview locally
