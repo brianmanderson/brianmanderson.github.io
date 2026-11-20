@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brian Anderson, PhD, DABR · Medical Physics &amp; AI</title>
+  <meta name="description" content="Brian Anderson is a medical physicist at UC San Diego building clinical software and open-source AI tools for radiation oncology.">
+  <meta name="theme-color" content="#0a0f15">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <!-- Apply the saved theme before first paint. -->
+  <script>
+    (function () {
+      try { var t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+      document.documentElement.classList.add("js");
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/hero.css">
+  <link rel="stylesheet" href="assets/css/map.css">
+  <link rel="stylesheet" href="assets/css/sections.css">
+  <link rel="stylesheet" href="assets/css/pubs.css">
+</head>
+<body>
+  <a class="visually-hidden" href="#about">Skip to content</a>
+
+  <!-- NAV: styled by hero.css, behaviour in main.js -->
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a class="nav-brand" href="#top" aria-label="Brian Anderson, home">
+        <span class="nav-mark" aria-hidden="true">BA</span>
+        <span class="nav-name">Brian Anderson</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Sections">
+        <a href="#about">About</a>
+        <a href="#journey">Journey</a>
+        <a href="#now">Now</a>
+        <a href="#work">Work</a>
+        <a href="#awards">Awards</a>
+        <a href="#publications">Publications</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="nav-theme" id="theme-toggle" type="button" aria-label="Switch colour theme"></button>
+        <button class="nav-menu" id="nav-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO: hero.css + hero.js -->
+    <section class="hero" id="hero">
+      <canvas class="hero-field" id="hero-field" aria-hidden="true"></canvas>
+      <div class="container hero-inner">
+        <p class="eyebrow">Medical physics · AI in radiation oncology</p>
+        <h1 class="hero-title">Brian Anderson<span class="hero-cred">PhD, DABR</span></h1>
+        <p class="hero-lede">I'm a medical physicist at UC San Diego. I build software that makes it out of the lab: into the treatment room, into a randomized trial, and into the open-source tools other clinics run.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#journey">Trace the journey</a>
+          <a class="btn" href="#work">See the work</a>
+        </div>
+        <a class="hero-location" href="#journey">
+          <span class="hero-pulse" aria-hidden="true"></span>
+          <span>Currently in <strong>San Diego, California</strong></span>
+          <span class="mono hero-coords">32.88° N · 117.23° W</span>
+        </a>
+      </div>
+      <!-- hero.js fills this with headline numbers from window.SITE / window.PUBS -->
+      <div class="container"><dl class="hero-stats" id="hero-stats"></dl></div>
+    </section>
+
+    <!-- ABOUT: sections.css + sections.js -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">About</p>
+          <h2>Physics for the clinic, code for everyone.</h2>
+        </div>
+        <div id="about-root"></div>
+      </div>
+    </section>
+
+    <!-- JOURNEY: map.css + map.js -->
+    <section class="section" id="journey">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Journey</p>
+          <h2>Five cities, coast to coast and back.</h2>
+          <p>Where I've studied, trained, and worked, from a nuclear engineering degree in Atlanta to the faculty in San Diego. Pick a chapter or play the route.</p>
+        </div>
+        <div id="journey-root"></div>
+      </div>
+    </section>
+
+    <!-- NOW: sections.css + sections.js -->
+    <section class="section" id="now">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Now</p>
+          <h2>What I'm working on.</h2>
+          <p>At UC San Diego I split my time between the clinic and the software that runs around it.</p>
+        </div>
+        <div id="now-root"></div>
+      </div>
+    </section>
+
+    <!-- WORK: sections.css + sections.js -->
+    <section class="section" id="work">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Selected work</p>
+          <h2>Four things I'm proud of.</h2>
+          <p>Each one started as a research problem and ended up somewhere people use it.</p>
+        </div>
+        <div id="work-root"></div>
+      </div>
+    </section>
+
+    <!-- AWARDS: sections.css + sections.js -->
+    <section class="section" id="awards">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Recognition</p>
+          <h2>Awards, grants, and fellowships.</h2>
+        </div>
+        <div id="awards-root"></div>
+      </div>
+    </section>
+
+    <!-- PUBLICATIONS: pubs.css + pubs.js -->
+    <section class="section" id="publications">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Publications &amp; talks</p>
+          <h2>The paper trail.</h2>
+          <p>Papers, invited talks, and conference presentations. Search by title, co-author, or journal.</p>
+        </div>
+        <div id="pubs-root"></div>
+      </div>
+    </section>
+
+    <!-- CONTACT: sections.css + sections.js -->
+    <section class="section" id="contact">
+      <div class="container">
+        <div id="contact-root"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> Brian Anderson</span>
+      <span class="mono">San Diego, California</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js" defer></script>
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/publications.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/hero.js" defer></script>
+  <script src="assets/js/map.js" defer></script>
+  <script src="assets/js/sections.js" defer></script>
+  <script src="assets/js/pubs.js" defer></script>
+</body>
+</html>

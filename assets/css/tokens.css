@@ -1,0 +1,157 @@
+/* Shared design tokens and base styles. Component styles live in their own files
+   and must use these variables rather than hard-coded colours. */
+
+:root {
+  /* Type */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* Isodose ramp: cold (low dose) to hot (high dose). Used for contours, pins, accents. */
+  --iso-1: #3b82c4;
+  --iso-2: #22a3b8;
+  --iso-3: #3fb27f;
+  --iso-4: #d9b93a;
+  --iso-5: #f08c2e;
+  --iso-6: #e5484d;
+
+  /* Layout */
+  --container: 1180px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --section-pad: clamp(72px, 11vw, 148px);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+
+  /* Dark theme (default) */
+  color-scheme: dark;
+  --bg: #0a0f15;
+  --bg-raised: #111922;
+  --bg-sunken: #070b10;
+  --line: #1f2a36;
+  --line-strong: #32414f;
+  --text: #e9eef3;
+  --text-muted: #93a1b0;
+  --text-faint: #5f6e7d;
+  --accent: #f5a524;        /* warm amber: primary accent */
+  --accent-ink: #1a1204;    /* text on accent */
+  --accent-2: #5cc8d7;      /* cool cyan: secondary accent */
+  --map-land: #121b25;
+  --map-border: #26333f;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f2ea;
+  --bg-raised: #fffdf8;
+  --bg-sunken: #ece6da;
+  --line: #ddd5c6;
+  --line-strong: #bfb5a2;
+  --text: #17202a;
+  --text-muted: #55616d;
+  --text-faint: #8a8f94;
+  --accent: #c2500c;
+  --accent-ink: #fffaf2;
+  --accent-2: #0e7490;
+  --map-land: #ebe4d6;
+  --map-border: #cfc5b2;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #f6f2ea;
+    --bg-raised: #fffdf8;
+    --bg-sunken: #ece6da;
+    --line: #ddd5c6;
+    --line-strong: #bfb5a2;
+    --text: #17202a;
+    --text-muted: #55616d;
+    --text-faint: #8a8f94;
+    --accent: #c2500c;
+    --accent-ink: #fffaf2;
+    --accent-2: #0e7490;
+    --map-land: #ebe4d6;
+    --map-border: #cfc5b2;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, svg, canvas { display: block; max-width: 100%; }
+a { color: inherit; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.08; letter-spacing: -0.015em; margin: 0; }
+p { margin: 0 0 1em; }
+
+.container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+
+.section { padding-block: var(--section-pad); position: relative; }
+.section + .section { border-top: 1px solid var(--line); }
+
+.section-head { max-width: 760px; margin-bottom: clamp(32px, 5vw, 64px); }
+.section-head h2 { font-size: clamp(2rem, 5vw, 3.4rem); }
+.section-head p { color: var(--text-muted); font-size: 1.1rem; margin: 18px 0 0; }
+
+/* Small mono label used above headings and for metadata. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+
+.mono { font-family: var(--font-mono); font-size: 0.82em; letter-spacing: 0.02em; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-radius: 999px;
+  border: 1px solid var(--line-strong); background: transparent;
+  font-weight: 500; font-size: 0.95rem; text-decoration: none;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { filter: brightness(1.08); }
+
+.chip {
+  display: inline-flex; align-items: center;
+  padding: 4px 11px; border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em;
+  color: var(--text-muted); white-space: nowrap;
+}
+
+/* Scroll reveal. main.js adds .js to <html> and .in to elements as they enter view.
+   Without JS everything stays visible. */
+.js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.js [data-reveal].in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js [data-reveal] { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
